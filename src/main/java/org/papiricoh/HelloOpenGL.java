@@ -109,6 +109,7 @@ public class HelloOpenGL {
         shaderProgram.link();
 
 
+
         float[] vertices = {
                 // Primer vértice (x, y, z)
                 -0.5f, -0.5f, 0.0f,
