@@ -9,6 +9,8 @@ import java.nio.*;
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL20.GL_FRAGMENT_SHADER;
+import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
 import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
@@ -16,6 +18,7 @@ public class HelloOpenGL {
 
     // The window handle
     private long window;
+    private ShaderProgram shaderProgram;
 
     public void run() {
         System.out.println("Hello LWJGL " + Version.getVersion() + "!");
@@ -30,6 +33,7 @@ public class HelloOpenGL {
         // Terminate GLFW and free the error callback
         glfwTerminate();
         glfwSetErrorCallback(null).free();
+        shaderProgram.cleanup();
     }
 
     private void init() {
@@ -45,6 +49,10 @@ public class HelloOpenGL {
         glfwDefaultWindowHints(); // optional, the current window hints are already the default
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
         // Create the window
         window = glfwCreateWindow(300, 300, "Hello World!", NULL, NULL);
@@ -83,6 +91,14 @@ public class HelloOpenGL {
 
         // Make the window visible
         glfwShowWindow(window);
+        GL.createCapabilities();
+
+
+        shaderProgram = new ShaderProgram();
+
+        shaderProgram.loadAndCompileShader("/shaders/vertex.glsl", GL_VERTEX_SHADER);
+        shaderProgram.loadAndCompileShader("/shaders/fragment.glsl", GL_FRAGMENT_SHADER);
+        shaderProgram.link();
     }
 
     private void loop() {
@@ -91,7 +107,6 @@ public class HelloOpenGL {
         // LWJGL detects the context that is current in the current thread,
         // creates the GLCapabilities instance and makes the OpenGL
         // bindings available for use.
-        GL.createCapabilities();
 
         // Set the clear color
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -100,6 +115,8 @@ public class HelloOpenGL {
         // the window or has pressed the ESCAPE key.
         while ( !glfwWindowShouldClose(window) ) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
+
+            shaderProgram.use();
 
             glfwSwapBuffers(window); // swap the color buffers
 
