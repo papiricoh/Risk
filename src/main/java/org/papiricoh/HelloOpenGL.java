@@ -3,17 +3,19 @@ import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.*;
+import org.papiricoh.game.map.Province;
+import org.papiricoh.shader.ShaderProgram;
 
 import java.nio.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15C.glGenBuffers;
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.*;
@@ -24,6 +26,7 @@ public class HelloOpenGL {
     private long window;
     private ShaderProgram shaderProgram;
     private int vao;
+    private List<Province> provinces;
 
     public void run() {
         System.out.println("Hello LWJGL " + Version.getVersion() + "!");
@@ -105,7 +108,7 @@ public class HelloOpenGL {
         shaderProgram.loadAndCompileShader("/shaders/fragment.glsl", GL_FRAGMENT_SHADER);
         shaderProgram.link();
 
-        /*
+
         float[] vertices = {
                 // Primer vértice (x, y, z)
                 -0.5f, -0.5f, 0.0f,
@@ -114,22 +117,9 @@ public class HelloOpenGL {
                 // Tercer vértice
                 0.0f,  0.5f, 0.0f
         };
-        // Generar el VBO y cargar los datos de los vértices
-        int vbo = glGenBuffers();
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
 
-        // Generar el VAO y enlazarlo con el VBO
-        vao = glGenVertexArrays();
-        glBindVertexArray(vao);
-
-        // Habilitar el atributo de vértice 0 (asumimos que es la posición en el shader)
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
-
-        // Desenlazar el VAO y el VBO
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);*/
+        provinces = new ArrayList<>();
+        provinces.add(new Province(vertices));
 
     }
 
@@ -150,13 +140,10 @@ public class HelloOpenGL {
 
             shaderProgram.use();
 
-            /*
-            // Enlazar el VAO y dibujar la geometría
-            glBindVertexArray(vao);
-            glDrawArrays(GL_TRIANGLES, 0, 3); // Suponiendo que usas 3 vértices para dibujar la provincia
 
-            // Desenlazar el VAO
-            glBindVertexArray(0);*/
+            for (Province p : provinces) {
+                p.render();
+            }
 
             glfwSwapBuffers(window); // swap the color buffers
 

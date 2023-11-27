@@ -1,4 +1,4 @@
-package org.papiricoh;
+package org.papiricoh.shader;
 import java.io.InputStream;
 import java.util.Scanner;
 
